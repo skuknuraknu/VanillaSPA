@@ -1,1 +1,1 @@
-# VanillaSPA
+# Vanilla SPA
