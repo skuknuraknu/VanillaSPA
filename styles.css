@@ -1,0 +1,390 @@
+/*
+ * iOS Design System CSS
+ * Crafted for authentic iOS look & feel: typography, rounded inset groups, translucency, and vibrant system colors.
+ */
+
+:root {
+  --ios-bg: #f2f2f7;
+  --ios-card-bg: #ffffff;
+  --ios-card-secondary-bg: #f8f8fb;
+  --ios-text-primary: #000000;
+  --ios-text-secondary: #8e8e93;
+  --ios-text-tertiary: #c7c7cc;
+  --ios-tint: #007aff;
+  --ios-tint-active: #0056b3;
+  --ios-destructive: #ff3b30;
+  --ios-separator: #e5e5ea;
+  --ios-header-bg: rgba(249, 249, 249, 0.85);
+  --ios-tabbar-bg: rgba(249, 249, 249, 0.88);
+  --ios-font: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "SF Pro", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  --ios-radius-lg: 16px;
+  --ios-radius-md: 12px;
+  --ios-radius-sm: 8px;
+  --ios-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ios-bg: #000000;
+    --ios-card-bg: #1c1c1e;
+    --ios-card-secondary-bg: #2c2c2e;
+    --ios-text-primary: #ffffff;
+    --ios-text-secondary: #8e8e93;
+    --ios-text-tertiary: #48484a;
+    --ios-tint: #0a84ff;
+    --ios-tint-active: #409cff;
+    --ios-destructive: #ff453a;
+    --ios-separator: #38383a;
+    --ios-header-bg: rgba(28, 28, 30, 0.85);
+    --ios-tabbar-bg: rgba(28, 28, 30, 0.88);
+    --ios-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+  }
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+  font-family: var(--ios-font);
+}
+
+body {
+  background-color: #e5e5ea;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  padding: 0;
+  color: var(--ios-text-primary);
+  overflow-x: hidden;
+}
+
+/* iOS App Device Simulator Container */
+.ios-app-container {
+  width: 100%;
+  max-width: 440px;
+  height: 100vh;
+  max-height: 920px;
+  background-color: var(--ios-bg);
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+}
+
+@media (min-width: 480px) {
+  .ios-app-container {
+    border-radius: 40px;
+    height: 880px;
+    border: 10px solid #2c2c2e;
+  }
+}
+
+/* Status Bar Mock */
+.ios-status-bar {
+  height: 44px;
+  padding: 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.2px;
+  z-index: 100;
+  background-color: var(--ios-header-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.ios-status-bar .time {
+  font-weight: 600;
+}
+
+.ios-status-bar .icons {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+/* Header / Navigation Bar */
+.ios-header {
+  height: 52px;
+  padding: 0 16px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--ios-header-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 0.5px solid var(--ios-separator);
+  position: sticky;
+  top: 0;
+  z-index: 90;
+}
+
+.ios-header h1 {
+  font-size: 17px;
+  font-weight: 600;
+  text-align: center;
+  flex-grow: 1;
+  letter-spacing: -0.4px;
+}
+
+/* Content Area */
+.root {
+  flex: 1;
+  overflow-y: auto;
+  padding-bottom: 90px; /* Space for bottom tab bar */
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* Hero / Large Title Section */
+.ios-large-title-container {
+  padding: 16px 20px 8px 20px;
+}
+
+.ios-large-title {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.8px;
+}
+
+.ios-subtitle {
+  font-size: 14px;
+  color: var(--ios-text-secondary);
+  margin-top: 4px;
+}
+
+/* Inset Group / Cards */
+.ios-group {
+  background-color: var(--ios-card-bg);
+  border-radius: var(--ios-radius-md);
+  margin: 16px 16px;
+  overflow: hidden;
+  box-shadow: var(--ios-shadow);
+}
+
+.ios-group-header {
+  font-size: 13px;
+  text-transform: uppercase;
+  color: var(--ios-text-secondary);
+  padding: 16px 20px 6px 20px;
+  letter-spacing: -0.1px;
+}
+
+/* List Items */
+.ios-list-item {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  border-bottom: 0.5px solid var(--ios-separator);
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+  text-decoration: none;
+  color: inherit;
+}
+
+.ios-list-item:last-child {
+  border-bottom: none;
+}
+
+.ios-list-item:active {
+  background-color: var(--ios-card-secondary-bg);
+}
+
+.ios-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--ios-tint), #5ac8fa);
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 16px;
+  margin-right: 14px;
+  flex-shrink: 0;
+}
+
+.ios-list-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.ios-list-title {
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.3px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ios-list-subtitle {
+  font-size: 13px;
+  color: var(--ios-text-secondary);
+  margin-top: 2px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.ios-chevron {
+  color: var(--ios-text-tertiary);
+  font-size: 18px;
+  margin-left: 8px;
+}
+
+/* iOS Button */
+.ios-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--ios-tint);
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 600;
+  padding: 12px 20px;
+  border-radius: var(--ios-radius-md);
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.2s, transform 0.1s;
+  width: 100%;
+  text-align: center;
+  text-decoration: none;
+}
+
+.ios-button:active {
+  opacity: 0.8;
+  transform: scale(0.98);
+}
+
+/* Bottom Tab Bar Navigation */
+.ios-tab-bar {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 70px;
+  background-color: var(--ios-tabbar-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-top: 0.5px solid var(--ios-separator);
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding-bottom: 10px;
+  z-index: 100;
+}
+
+.navLink {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: var(--ios-text-secondary);
+  font-size: 10px;
+  font-weight: 500;
+  transition: color 0.2s;
+  flex: 1;
+}
+
+.navLink.active {
+  color: var(--ios-tint);
+}
+
+.navLink svg {
+  width: 24px;
+  height: 24px;
+  margin-bottom: 2px;
+  fill: currentColor;
+}
+
+/* Badges / Chips */
+.ios-badge {
+  display: inline-block;
+  padding: 4px 8px;
+  font-size: 11px;
+  font-weight: 600;
+  border-radius: 12px;
+  background-color: var(--ios-card-secondary-bg);
+  color: var(--ios-tint);
+}
+
+/* Search Bar */
+.ios-search-container {
+  padding: 8px 16px 12px 16px;
+}
+
+.ios-search-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.ios-search-input {
+  width: 100%;
+  height: 36px;
+  background-color: var(--ios-card-secondary-bg);
+  border-radius: 10px;
+  border: none;
+  padding: 0 12px 0 34px;
+  font-size: 15px;
+  color: var(--ios-text-primary);
+  outline: none;
+}
+
+.ios-search-icon {
+  position: absolute;
+  left: 10px;
+  width: 16px;
+  height: 16px;
+  fill: var(--ios-text-secondary);
+  pointer-events: none;
+}
+
+/* Modal / Sheet Overlay */
+.ios-modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(4px);
+  z-index: 200;
+  display: flex;
+  justify-content: flex-end;
+  flex-direction: column;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.ios-modal-card {
+  background: var(--ios-card-bg);
+  border-top-left-radius: 20px;
+  border-top-right-radius: 20px;
+  padding: 24px 20px 40px 20px;
+  max-height: 85%;
+  overflow-y: auto;
+  box-shadow: 0 -10px 30px rgba(0,0,0,0.2);
+  animation: slideUp 0.25s cubic-bezier(0.1, 0.9, 0.2, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* Utility Animations */
+.fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
