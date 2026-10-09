@@ -1,16 +1,16 @@
 /**
- * Router Module for Vanilla SPA with iOS Design System
+ * Router Module for Vanilla SPA - Desktop Full Layout
  *
- * Handles client-side navigation, history management, DOM rendering,
- * and security precautions (XSS prevention via safe DOM node construction).
+ * Manages client-side routing, history state navigation, desktop views rendering,
+ * and security measures (preventing XSS via safe DOM node creation & textContent assignment).
  */
 
 const Router = {
     /**
-     * Initializes navigation listeners and handles initial page load routing.
+     * Initializes global click delegation for navigation links and history state listener.
      */
     init: () => {
-        // Delegate click events on navigation links to route smoothly without full page refresh
+        // Intercept navigation link clicks for smooth SPA transitions
         document.addEventListener('click', (e) => {
             const navLink = e.target.closest('a.navLink');
             if (navLink) {
@@ -22,61 +22,53 @@ const Router = {
             }
         });
 
-        // Handle browser Back / Forward buttons using popstate event
+        // Listen for browser navigation history changes (Back / Forward)
         window.addEventListener('popstate', (event) => {
             const route = event.state && event.state.route ? event.state.route : location.pathname;
             Router.go(route, false);
         });
 
-        // Process current initial URL pathname on page load
+        // Load initial route on startup
         Router.go(location.pathname);
     },
 
     /**
-     * Navigates to a specified route and updates the view and tab navigation state.
+     * Navigates to target route and updates page DOM view and active navigation state.
      *
-     * @param {string} route - Target path (e.g., '/', '/home', '/about')
-     * @param {boolean} addToHistory - Whether to push state to browser history
+     * @param {string} route - Target path (e.g. '/', '/home', '/about')
+     * @param {boolean} addToHistory - Push route into browser history
      */
     go: (route, addToHistory = true) => {
         if (addToHistory) {
             history.pushState({ route }, '', route);
         }
 
-        // Highlight active tab link in bottom tab bar
+        // Synchronize active nav link styles in header
         Router.updateActiveTab(route);
 
         const root = document.querySelector('.root');
-        const headerTitle = document.getElementById('header-title');
-
         if (!root) return;
 
-        // Reset scroll position
-        root.scrollTop = 0;
+        window.scrollTo({ top: 0, behavior: 'smooth' });
         root.innerHTML = '';
 
         let pageElement = null;
 
-        // Route dispatcher
         switch (route) {
             case '/':
             case '':
-                if (headerTitle) headerTitle.textContent = 'Index';
                 pageElement = Router.renderIndexPage();
                 break;
 
             case '/home':
-                if (headerTitle) headerTitle.textContent = 'Home';
                 pageElement = Router.renderHomePage();
                 break;
 
             case '/about':
-                if (headerTitle) headerTitle.textContent = 'Halaman About';
                 pageElement = Router.renderAboutPage();
                 break;
 
             default:
-                if (headerTitle) headerTitle.textContent = '404';
                 pageElement = Router.render404Page();
                 break;
         }
@@ -88,7 +80,7 @@ const Router = {
     },
 
     /**
-     * Updates active tab styling in the tab bar.
+     * Updates active navigation state in navbar.
      * @param {string} currentRoute
      */
     updateActiveTab: (currentRoute) => {
@@ -105,103 +97,100 @@ const Router = {
     },
 
     /**
-     * Renders Index Page View using iOS cards and hero section.
+     * Renders Index Page View with desktop hero banner and feature dashboard cards.
      * @returns {HTMLElement}
      */
     renderIndexPage: () => {
         const container = document.createElement('div');
 
-        // Large Title Header
-        const titleGroup = document.createElement('div');
-        titleGroup.className = 'ios-large-title-container';
+        // Hero Section
+        const hero = document.createElement('div');
+        hero.className = 'desktop-hero';
 
+        const heroContent = document.createElement('div');
         const title = document.createElement('h1');
-        title.className = 'ios-large-title';
-        title.textContent = 'Index';
+        title.className = 'desktop-hero-title';
+        title.textContent = 'Index Dashboard';
 
         const subtitle = document.createElement('p');
-        subtitle.className = 'ios-subtitle';
-        subtitle.textContent = 'Selamat datang di Aplikasi iOS Web';
+        subtitle.className = 'desktop-hero-subtitle';
+        subtitle.textContent = 'Selamat datang di Platform Web Application Single Page';
 
-        titleGroup.appendChild(title);
-        titleGroup.appendChild(subtitle);
-        container.appendChild(titleGroup);
+        heroContent.appendChild(title);
+        heroContent.appendChild(subtitle);
+        hero.appendChild(heroContent);
+        container.appendChild(hero);
 
-        // Group Card 1: Overview
-        const group = document.createElement('div');
-        group.className = 'ios-group';
+        // Grid Section
+        const grid = document.createElement('div');
+        grid.className = 'desktop-grid';
 
-        const item1 = Router.createListItem({
-            title: 'User Management',
-            subtitle: 'Kelola data pengguna dari API',
+        const card1 = Router.createDesktopCard({
             icon: '👥',
-            onClick: () => Router.go('/home')
+            title: 'User Directory',
+            subtitle: 'Kelola dan lihat direktori pengguna terdaftar dari API.',
+            actionText: 'Buka Home',
+            onAction: () => Router.go('/home')
         });
 
-        const item2 = Router.createListItem({
-            title: 'Tentang Aplikasi',
-            subtitle: 'Informasi versi dan pengembang',
+        const card2 = Router.createDesktopCard({
             icon: 'ℹ️',
-            onClick: () => Router.go('/about')
+            title: 'Informasi System',
+            subtitle: 'Spesifikasi UI desktop, keamanan, dan arsitektur modul.',
+            actionText: 'Lihat About',
+            onAction: () => Router.go('/about')
         });
 
-        group.appendChild(item1);
-        group.appendChild(item2);
-        container.appendChild(group);
+        grid.appendChild(card1);
+        grid.appendChild(card2);
+        container.appendChild(grid);
 
         return container;
     },
 
     /**
-     * Renders Home Page View listing users fetched from API.
+     * Renders Home Page View listing users in a multi-column desktop grid with instant search.
      * @returns {HTMLElement}
      */
     renderHomePage: () => {
         const container = document.createElement('div');
 
-        // Large Title Header
-        const titleGroup = document.createElement('div');
-        titleGroup.className = 'ios-large-title-container';
+        // Hero Section
+        const hero = document.createElement('div');
+        hero.className = 'desktop-hero';
 
+        const heroContent = document.createElement('div');
         const title = document.createElement('h1');
-        title.className = 'ios-large-title';
+        title.className = 'desktop-hero-title';
         title.textContent = 'Home';
 
         const subtitle = document.createElement('p');
-        subtitle.className = 'ios-subtitle';
-        subtitle.textContent = 'Daftar Pengguna';
+        subtitle.className = 'desktop-hero-subtitle';
+        subtitle.textContent = 'Daftar Pengguna Terdaftar dalam Sistem';
 
-        titleGroup.appendChild(title);
-        titleGroup.appendChild(subtitle);
-        container.appendChild(titleGroup);
+        heroContent.appendChild(title);
+        heroContent.appendChild(subtitle);
+        hero.appendChild(heroContent);
+        container.appendChild(hero);
 
-        // Search Input
-        const searchContainer = document.createElement('div');
-        searchContainer.className = 'ios-search-container';
-
-        const searchWrapper = document.createElement('div');
-        searchWrapper.className = 'ios-search-input-wrapper';
+        // Search Bar Section
+        const searchBar = document.createElement('div');
+        searchBar.className = 'desktop-search-bar';
 
         const searchInput = document.createElement('input');
         searchInput.type = 'text';
-        searchInput.placeholder = 'Cari pengguna...';
-        searchInput.className = 'ios-search-input';
+        searchInput.placeholder = 'Cari berdasarkan nama atau email...';
+        searchInput.className = 'desktop-search-input';
 
-        searchWrapper.appendChild(searchInput);
-        searchContainer.appendChild(searchWrapper);
-        container.appendChild(searchContainer);
+        searchBar.appendChild(searchInput);
+        container.appendChild(searchBar);
 
-        // User List Container Group
-        const groupHeader = document.createElement('div');
-        groupHeader.className = 'ios-group-header';
-        groupHeader.textContent = 'Pengguna Terdaftar';
-        container.appendChild(groupHeader);
+        // Grid Container for User Cards
+        const grid = document.createElement('div');
+        grid.className = 'desktop-grid';
 
-        const group = document.createElement('div');
-        group.className = 'ios-group';
-
-        const renderUserList = (filterText = '') => {
-            group.innerHTML = '';
+        const renderUserCards = (filterText = '') => {
+            grid.innerHTML = '';
             const users = (window.app && window.app.store && window.app.store.users) || [];
 
             const filtered = users.filter(u => {
@@ -211,141 +200,155 @@ const Router = {
             });
 
             if (filtered.length === 0) {
-                const emptyItem = document.createElement('div');
-                emptyItem.style.padding = '20px';
-                emptyItem.style.textAlign = 'center';
-                emptyItem.style.color = 'var(--ios-text-secondary)';
-                emptyItem.textContent = users.length === 0 ? 'Memuat data pengguna...' : 'Tidak ada pengguna ditemukan.';
-                group.appendChild(emptyItem);
+                const emptyMessage = document.createElement('div');
+                emptyMessage.style.gridColumn = '1 / -1';
+                emptyMessage.style.padding = '40px';
+                emptyMessage.style.textAlign = 'center';
+                emptyMessage.style.color = 'var(--ios-text-secondary)';
+                emptyMessage.textContent = users.length === 0 ? 'Memuat data pengguna...' : 'Tidak ada pengguna yang cocok dengan pencarian.';
+                grid.appendChild(emptyMessage);
                 return;
             }
 
             filtered.forEach(user => {
-                const userItem = document.createElement('div');
-                userItem.className = 'ios-list-item';
+                const card = document.createElement('div');
+                card.className = 'desktop-card';
 
-                // Safe Avatar generation
+                // Header
+                const cardHeader = document.createElement('div');
+                cardHeader.className = 'desktop-card-header';
+
                 const avatar = document.createElement('div');
-                avatar.className = 'ios-avatar';
-                const initial = user.name ? user.name.charAt(0).toUpperCase() : 'U';
-                avatar.textContent = initial;
+                avatar.className = 'desktop-avatar';
+                avatar.textContent = user.name ? user.name.charAt(0).toUpperCase() : 'U';
 
-                // Safe Content construction
-                const content = document.createElement('div');
-                content.className = 'ios-list-content';
+                const headerText = document.createElement('div');
 
                 const nameEl = document.createElement('div');
-                nameEl.className = 'ios-list-title';
-                // Security: textContent ensures XSS safety
-                nameEl.textContent = user.name || 'Unknown User';
+                nameEl.className = 'desktop-card-title';
+                nameEl.textContent = user.name || 'Unknown User'; // XSS Safe
 
-                const subEl = document.createElement('div');
-                subEl.className = 'ios-list-subtitle';
-                // Security: textContent prevents HTML injection from API response
-                subEl.textContent = `${user.email || ''} • ${user.company ? user.company.name : ''}`;
+                const emailEl = document.createElement('div');
+                emailEl.className = 'desktop-card-subtitle';
+                emailEl.textContent = user.email || ''; // XSS Safe
 
-                content.appendChild(nameEl);
-                content.appendChild(subEl);
+                headerText.appendChild(nameEl);
+                headerText.appendChild(emailEl);
 
-                const chevron = document.createElement('div');
-                chevron.className = 'ios-chevron';
-                chevron.textContent = '›';
+                cardHeader.appendChild(avatar);
+                cardHeader.appendChild(headerText);
+                card.appendChild(cardHeader);
 
-                userItem.appendChild(avatar);
-                userItem.appendChild(content);
-                userItem.appendChild(chevron);
+                // Body
+                const cardBody = document.createElement('div');
+                cardBody.className = 'desktop-card-body';
 
-                userItem.addEventListener('click', () => {
+                const companyEl = document.createElement('span');
+                companyEl.className = 'ios-badge';
+                companyEl.textContent = user.company ? user.company.name : 'Individual';
+
+                const detailBtn = document.createElement('button');
+                detailBtn.className = 'ios-button';
+                detailBtn.textContent = 'Lihat Detail';
+                detailBtn.addEventListener('click', () => {
                     Router.showUserDetailModal(user);
                 });
 
-                group.appendChild(userItem);
+                cardBody.appendChild(companyEl);
+                cardBody.appendChild(detailBtn);
+                card.appendChild(cardBody);
+
+                grid.appendChild(card);
             });
         };
 
-        renderUserList();
+        renderUserCards();
 
-        // Search event listener
+        // Search Input listener
         searchInput.addEventListener('input', (e) => {
-            renderUserList(e.target.value);
+            renderUserCards(e.target.value);
         });
 
-        container.appendChild(group);
+        container.appendChild(grid);
 
         return container;
     },
 
     /**
-     * Renders About Page View in iOS settings/card style.
+     * Renders About Page View with desktop system overview cards.
      * @returns {HTMLElement}
      */
     renderAboutPage: () => {
         const container = document.createElement('div');
 
-        // Large Title
-        const titleGroup = document.createElement('div');
-        titleGroup.className = 'ios-large-title-container';
+        // Hero Section
+        const hero = document.createElement('div');
+        hero.className = 'desktop-hero';
 
+        const heroContent = document.createElement('div');
         const title = document.createElement('h1');
-        title.className = 'ios-large-title';
+        title.className = 'desktop-hero-title';
         title.textContent = 'Halaman About';
 
         const subtitle = document.createElement('p');
-        subtitle.className = 'ios-subtitle';
-        subtitle.textContent = 'Informasi Sistem & Spesifikasi UI';
+        subtitle.className = 'desktop-hero-subtitle';
+        subtitle.textContent = 'Spesifikasi Sistem & Arsitektur Frontend Desktop';
 
-        titleGroup.appendChild(title);
-        titleGroup.appendChild(subtitle);
-        container.appendChild(titleGroup);
+        heroContent.appendChild(title);
+        heroContent.appendChild(subtitle);
+        hero.appendChild(heroContent);
+        container.appendChild(hero);
 
-        // App Card Group
-        const group = document.createElement('div');
-        group.className = 'ios-group';
+        // Grid Section
+        const grid = document.createElement('div');
+        grid.className = 'desktop-grid';
 
-        const appNameItem = Router.createListItem({
-            title: 'Aplikasi',
-            subtitle: 'Vanilla Single Page Application',
-            badge: 'v1.0.0'
+        const card1 = Router.createDesktopCard({
+            icon: '💻',
+            title: 'Layout Web Full-Width',
+            subtitle: 'Desain responsif desktop menggunakan San Francisco typography dan glassmorphic header navigation.',
+            badge: 'Apple Web Style'
         });
 
-        const uiItem = Router.createListItem({
-            title: 'Desain System',
-            subtitle: 'iOS Glassmorphism & Modern Styling',
-            badge: 'iOS 17'
+        const card2 = Router.createDesktopCard({
+            icon: '🛡️',
+            title: 'Keamanan DOM & XSS',
+            subtitle: 'Sanitasi data API penuh menggunakan safe DOM element construction dan textContent binding.',
+            badge: 'Secured'
         });
 
-        const secItem = Router.createListItem({
-            title: 'Keamanan DOM',
-            subtitle: 'Penanganan XSS dengan Sanitasi Node DOM',
-            badge: 'Aman'
+        const card3 = Router.createDesktopCard({
+            icon: '⚡',
+            title: 'SPA Routing Native',
+            subtitle: 'Navigasi tanpa page reload dengan sync state history popstate browser.',
+            badge: 'Fast & Lightweight'
         });
 
-        group.appendChild(appNameItem);
-        group.appendChild(uiItem);
-        group.appendChild(secItem);
-
-        container.appendChild(group);
+        grid.appendChild(card1);
+        grid.appendChild(card2);
+        grid.appendChild(card3);
+        container.appendChild(grid);
 
         return container;
     },
 
     /**
-     * Renders 404 Page View for undefined routes.
+     * Renders 404 Error Page View.
      * @returns {HTMLElement}
      */
     render404Page: () => {
         const container = document.createElement('div');
-        container.style.padding = '40px 20px';
+        container.style.padding = '60px 20px';
         container.style.textAlign = 'center';
 
         const title = document.createElement('h1');
-        title.className = 'ios-large-title';
-        title.style.fontSize = '48px';
+        title.className = 'desktop-hero-title';
+        title.style.fontSize = '64px';
         title.textContent = '404';
 
         const subtitle = document.createElement('p');
-        subtitle.className = 'ios-subtitle';
-        subtitle.style.marginBottom = '24px';
+        subtitle.className = 'desktop-hero-subtitle';
+        subtitle.style.marginBottom = '32px';
         subtitle.textContent = 'Halaman yang Anda cari tidak ditemukan.';
 
         const button = document.createElement('button');
@@ -361,152 +364,152 @@ const Router = {
     },
 
     /**
-     * Helper to safely construct standard iOS list items.
-     * Security: Uses textContent for all user-supplied text to prevent DOM-based XSS.
+     * Helper to create desktop grid cards safely.
+     * XSS Security: Asserts textContent for all passed strings.
      */
-    createListItem: ({ title, subtitle, icon, badge, onClick }) => {
-        const item = document.createElement('div');
-        item.className = 'ios-list-item';
+    createDesktopCard: ({ icon, title, subtitle, badge, actionText, onAction }) => {
+        const card = document.createElement('div');
+        card.className = 'desktop-card';
+
+        const cardHeader = document.createElement('div');
+        cardHeader.className = 'desktop-card-header';
 
         if (icon) {
             const avatar = document.createElement('div');
-            avatar.className = 'ios-avatar';
+            avatar.className = 'desktop-avatar';
             avatar.style.background = 'var(--ios-card-secondary-bg)';
             avatar.style.color = 'var(--ios-text-primary)';
-            avatar.style.fontSize = '20px';
             avatar.textContent = icon;
-            item.appendChild(avatar);
+            cardHeader.appendChild(avatar);
         }
 
-        const content = document.createElement('div');
-        content.className = 'ios-list-content';
+        const headerText = document.createElement('div');
 
         const titleEl = document.createElement('div');
-        titleEl.className = 'ios-list-title';
+        titleEl.className = 'desktop-card-title';
         titleEl.textContent = title;
 
-        content.appendChild(titleEl);
+        const subEl = document.createElement('div');
+        subEl.className = 'desktop-card-subtitle';
+        subEl.textContent = subtitle;
 
-        if (subtitle) {
-            const subEl = document.createElement('div');
-            subEl.className = 'ios-list-subtitle';
-            subEl.textContent = subtitle;
-            content.appendChild(subEl);
+        headerText.appendChild(titleEl);
+        headerText.appendChild(subEl);
+        cardHeader.appendChild(headerText);
+        card.appendChild(cardHeader);
+
+        if (badge || onAction) {
+            const cardBody = document.createElement('div');
+            cardBody.className = 'desktop-card-body';
+
+            if (badge) {
+                const badgeEl = document.createElement('span');
+                badgeEl.className = 'ios-badge';
+                badgeEl.textContent = badge;
+                cardBody.appendChild(badgeEl);
+            }
+
+            if (onAction && actionText) {
+                const btn = document.createElement('button');
+                btn.className = 'ios-button';
+                btn.textContent = actionText;
+                btn.addEventListener('click', onAction);
+                cardBody.appendChild(btn);
+            }
+
+            card.appendChild(cardBody);
         }
 
-        item.appendChild(content);
-
-        if (badge) {
-            const badgeEl = document.createElement('span');
-            badgeEl.className = 'ios-badge';
-            badgeEl.textContent = badge;
-            item.appendChild(badgeEl);
-        } else if (onClick) {
-            const chevron = document.createElement('div');
-            chevron.className = 'ios-chevron';
-            chevron.textContent = '›';
-            item.appendChild(chevron);
-        }
-
-        if (onClick) {
-            item.addEventListener('click', onClick);
-        }
-
-        return item;
+        return card;
     },
 
     /**
-     * Displays an iOS Sheet Modal showing detailed user information safely.
+     * Opens a centered desktop modal dialog showing user details.
+     * Security: Safely constructs modal DOM without innerHTML string interpolation.
      * @param {Object} user
      */
     showUserDetailModal: (user) => {
-        // Prevent duplicate modals
-        const existingModal = document.querySelector('.ios-modal-overlay');
+        // Remove existing modal if present
+        const existingModal = document.querySelector('.desktop-modal-overlay');
         if (existingModal) existingModal.remove();
 
         const overlay = document.createElement('div');
-        overlay.className = 'ios-modal-overlay';
+        overlay.className = 'desktop-modal-overlay';
 
         const card = document.createElement('div');
-        card.className = 'ios-modal-card';
+        card.className = 'desktop-modal-card';
 
-        // Modal Header
+        // Header
         const header = document.createElement('div');
         header.style.display = 'flex';
         header.style.justifyContent = 'space-between';
         header.style.alignItems = 'center';
-        header.style.marginBottom = '16px';
+        header.style.marginBottom = '24px';
 
         const modalTitle = document.createElement('h2');
-        modalTitle.style.fontSize = '20px';
+        modalTitle.style.fontSize = '22px';
         modalTitle.style.fontWeight = '700';
         modalTitle.textContent = user.name || 'Detail Pengguna';
 
         const closeBtn = document.createElement('button');
-        closeBtn.style.background = 'none';
-        closeBtn.style.border = 'none';
-        closeBtn.style.color = 'var(--ios-tint)';
-        closeBtn.style.fontSize = '16px';
-        closeBtn.style.fontWeight = '600';
-        closeBtn.style.cursor = 'pointer';
-        closeBtn.textContent = 'Selesai';
+        closeBtn.className = 'ios-button';
+        closeBtn.style.padding = '6px 14px';
+        closeBtn.textContent = 'Tutup';
         closeBtn.addEventListener('click', () => overlay.remove());
 
         header.appendChild(modalTitle);
         header.appendChild(closeBtn);
         card.appendChild(header);
 
-        // Modal Content Group
-        const detailsGroup = document.createElement('div');
-        detailsGroup.className = 'ios-group';
-        detailsGroup.style.margin = '0';
+        // Content
+        const detailsContainer = document.createElement('div');
+        detailsContainer.style.display = 'grid';
+        detailsContainer.style.gridTemplateColumns = '1fr 1fr';
+        detailsContainer.style.gap = '16px';
 
         const details = [
-            { title: 'Username', subtitle: user.username },
-            { title: 'Email', subtitle: user.email },
-            { title: 'Telepon', subtitle: user.phone },
-            { title: 'Website', subtitle: user.website },
-            { title: 'Perusahaan', subtitle: user.company ? user.company.name : '-' }
+            { label: 'Username', value: user.username },
+            { label: 'Email', value: user.email },
+            { label: 'Telepon', value: user.phone },
+            { label: 'Website', value: user.website },
+            { label: 'Perusahaan', value: user.company ? user.company.name : '-' },
+            { label: 'Kota', value: user.address ? user.address.city : '-' }
         ];
 
-        details.forEach(d => {
-            if (d.subtitle) {
-                const item = document.createElement('div');
-                item.className = 'ios-list-item';
+        details.forEach(item => {
+            const itemBox = document.createElement('div');
+            itemBox.style.padding = '12px';
+            itemBox.style.backgroundColor = 'var(--ios-card-secondary-bg)';
+            itemBox.style.borderRadius = 'var(--ios-radius-md)';
 
-                const cnt = document.createElement('div');
-                cnt.className = 'ios-list-content';
+            const lbl = document.createElement('div');
+            lbl.style.fontSize = '12px';
+            lbl.style.color = 'var(--ios-text-secondary)';
+            lbl.style.fontWeight = '600';
+            lbl.style.textTransform = 'uppercase';
+            lbl.textContent = item.label;
 
-                const t = document.createElement('div');
-                t.className = 'ios-list-title';
-                t.style.fontSize = '14px';
-                t.style.color = 'var(--ios-text-secondary)';
-                t.textContent = d.title;
+            const val = document.createElement('div');
+            val.style.fontSize = '15px';
+            val.style.fontWeight = '600';
+            val.style.marginTop = '4px';
+            val.style.wordBreak = 'break-word';
+            val.textContent = item.value || '-'; // XSS Safe binding
 
-                const sub = document.createElement('div');
-                sub.className = 'ios-list-subtitle';
-                sub.style.fontSize = '16px';
-                sub.style.color = 'var(--ios-text-primary)';
-                sub.style.marginTop = '2px';
-                sub.textContent = d.subtitle;
-
-                cnt.appendChild(t);
-                cnt.appendChild(sub);
-                item.appendChild(cnt);
-                detailsGroup.appendChild(item);
-            }
+            itemBox.appendChild(lbl);
+            itemBox.appendChild(val);
+            detailsContainer.appendChild(itemBox);
         });
 
-        card.appendChild(detailsGroup);
+        card.appendChild(detailsContainer);
         overlay.appendChild(card);
 
-        // Dismiss when clicking backdrop
+        // Dismiss when clicking overlay
         overlay.addEventListener('click', (e) => {
             if (e.target === overlay) overlay.remove();
         });
 
-        const appContainer = document.querySelector('.ios-app-container') || document.body;
-        appContainer.appendChild(overlay);
+        document.body.appendChild(overlay);
     }
 };
 
